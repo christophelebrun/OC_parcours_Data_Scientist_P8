@@ -3,7 +3,10 @@ downloads/
 plots/
 .ipynb_checkpoints/
 s3/docs/
+config/
+logs/
+s3/results/
 
+s3/hello_world.py
 projet8_pyspark.ipynb
 projet8_misc.ipynb
-credentials.csv
