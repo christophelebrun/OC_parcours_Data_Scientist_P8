@@ -5,7 +5,8 @@
 # spark-submit --driver-memory 10g --packages databricks:spark-deep-learning:1.5.0-spark2.4-s_2.11 pyspark_app.py .
 
 # CLUSTER RUN:
-# spark-submit --master yarn --packages databricks:spark-deep-learning:1.5.0-spark2.4-s_2.11 --deploy-mode cluster pyspark_app.py s3://p8-fruits/
+# spark-submit --master yarn --driver-memory 10g --packages databricks:spark-deep-learning:1.5.0-spark2.4-s_2.11 --deploy-mode cluster s3://p8-fruits/pyspark_app.py s3://p8-fruits/
+# spark-submit --master yarn --packages databricks:spark-deep-learning:1.5.0-spark2.4-s_2.11 --deploy-mode client s3://p8-fruits/pyspark_app.py s3://p8-fruits/
 
 ##################################
 # Import libraries
@@ -13,6 +14,7 @@
 
 import sys, os
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import split, element_at
 from sparkdl import DeepImageFeaturizer
 
 
@@ -21,13 +23,25 @@ if __name__ == "__main__":
 
 
     ##################################
+    # DEBUG
+    ##################################
+    print('###################################################')
+    print('Version:')
+    print(sys.version)
+    print('###################################################')
+    import keras
+    print("Keras imported.")
+    print('###################################################')
+
+    ##################################
     # Creating SparkSession
     ##################################
 
-    spark = (SparkSession
-                .builder
-                .appName("p8_featurizer")
-                .getOrCreate()
+    spark = (
+        SparkSession
+        .builder
+        .appName("p8_featurizer")
+        .getOrCreate()
     )
 
     ##################################
@@ -40,21 +54,49 @@ if __name__ == "__main__":
     DATA_PATH = os.path.join(ROOT_PATH, "data/")
 
     # TEST MODE
-    DATA_PATH = os.path.join(ROOT_PATH, "data/Test/Apricot/") # REMOVE for production
+    DATA_PATH = os.path.join(ROOT_PATH, "data/Test/Apricot/") # REMOVE the line for production
 
-    image_df = spark.read.format("image").load(DATA_PATH)
+    print("Loading images…")
+    image_df = (
+        spark
+        .read
+        .format("image")
+        .load(DATA_PATH)
+    )
+
     image_df.repartition(180)
+    print("Images loaded.")
+    print('###################################################')
+
+    ##################################
+    # Getting the labels (targets)
+    ##################################
+
+    
+
+    # Getting the label by splitting the path of the image and getting its last directory
+    print("Generating labels…")
+    image_df = (image_df
+                .withColumn(
+                    'label',
+                    element_at(
+                        split(
+                            image_df['image.origin'],
+                            "/"),
+                        -2))
+                .show(2))
+
+
+    print("Labels generated")
+    print('###################################################')
+
+    ##################################
+    # DEBUG
+    ##################################
     
     print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-    print(image_df.rdd.getNumPartitions())
+    print("Number of partitions:", image_df.rdd.getNumPartitions())
     print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-
-    ##################################
-    # Pre-processing
-    ##################################
-
-    # img_count = image_df.count()
-
 
 
     ##################################
@@ -68,19 +110,25 @@ if __name__ == "__main__":
     # image_df = image_df.limit(10) # REMOVE for production
 
     # Apply the featurizer to our image_df DataFrame
+    print("Featurizing images…")
     features_df = featurizer.transform(image_df)
-
+    print("Images featurized.")
 
     #######################################
     # Log results locally, as Parquet file
     #######################################
 
     RESULTS_PATH = os.path.join(ROOT_PATH, "results")
-    features_df.write.format("parquet").mode("overwrite").save(RESULTS_PATH)
+    RESULTS_PATH = os.path.join(ROOT_PATH, "results2") # REMOVE the line for production
 
+    print("Saving results…")
+    features_df.write.format("parquet").mode("overwrite").save(RESULTS_PATH)
+    print("Results saved.")
 
     ####################################
     # Closing the sparkSession
     ####################################
 
+
     spark.stop()
+    print("SparkSession stopped.")
