@@ -1,0 +1,20 @@
+URL des livrables du Projet 8, Parcours Data Scientist
+------------------------------------------------------
+
+* Données (images)
+https://p8-fruits.s3.eu-west-3.amazonaws.com/data/fruits.zip
+
+* Résultats (paquet)
+https://p8-fruits.s3.eu-west-3.amazonaws.com/results/results.zip
+
+* EMR Notebook (PySpark)
+https://aws-emr-resources-920434047289-us-east-1.s3.amazonaws.com/notebooks/e-77A7SIMU4EQWWZ4SZ8STPO9K4/P8_exploration.ipynb
+
+* Script PySpark
+https://p8-fruits.s3.eu-west-3.amazonaws.com/pyspark_app.py
+
+* Script bootstrap EMR
+https://p8-fruits.s3.eu-west-3.amazonaws.com/bootstrap-emr.sh
+
+* Fichier JSON de configuration du cluster EMR
+https://p8-fruits.s3.eu-west-3.amazonaws.com/config_cluster.json
