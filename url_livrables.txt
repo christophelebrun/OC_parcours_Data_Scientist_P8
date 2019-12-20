@@ -4,7 +4,7 @@ URL des livrables du Projet 8, Parcours Data Scientist
 * Données (images)
 https://p8-fruits.s3.eu-west-3.amazonaws.com/data/fruits.zip
 
-* Résultats (paquet)
+* Résultats (parquet)
 https://p8-fruits.s3.eu-west-3.amazonaws.com/results/results.zip
 
 * EMR Notebook (PySpark)

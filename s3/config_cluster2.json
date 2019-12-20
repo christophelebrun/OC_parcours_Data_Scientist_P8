@@ -1,0 +1,22 @@
+[
+    {
+        "classification": "spark-env",
+        "properties": {},
+        "configurations": [
+            {
+                "classification": "export",
+                "properties": {
+                    "PYSPARK_PYTHON": "/usr/bin/python3"
+                },
+                "configurations": []
+            }
+        ]
+    },
+
+    {
+        "Classification": "spark",
+        "Properties": {
+            "maximizeResourceAllocation": "true"
+        }
+    }
+]
